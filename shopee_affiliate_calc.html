@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penghitung Komisi Shopee Affiliate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+            color: #333;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 sm:p-8 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg w-full max-w-2xl border-t-8 border-orange-500">
+        <h1 class="text-2xl sm:text-3xl font-bold text-center mb-2">Penghitung Komisi Shopee Affiliate</h1>
+        <p class="text-center text-gray-600 mb-6">Hitung komisi Anda berdasarkan skema baru.</p>
+
+        <div class="space-y-4">
+            <!-- Program Selection -->
+            <div>
+                <label for="program" class="block text-sm font-medium text-gray-700 mb-1">Pilih Program:</label>
+                <select id="program" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm rounded-md shadow-sm">
+                    <option value="shopeePartner">Shopee Partner</option>
+                    <option value="shopeeAffiliate">Shopee Affiliate</option>
+                </select>
+            </div>
+
+            <!-- Order Source Selection -->
+            <div>
+                <label for="orderSource" class="block text-sm font-medium text-gray-700 mb-1">Sumber Pesanan:</label>
+                <select id="orderSource" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm rounded-md shadow-sm">
+                    <option value="promoted">Toko yang dipromosikan</option>
+                    <option value="unpromoted">Toko yang tidak dipromosikan</option>
+                </select>
+            </div>
+
+            <!-- Product Category Selection -->
+            <div>
+                <label for="productCategory" class="block text-sm font-medium text-gray-700 mb-1">Kategori Produk:</label>
+                <select id="productCategory" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm rounded-md shadow-sm">
+                    <option value="nonElectronic">Non-elektronik</option>
+                    <option value="electronic">Elektronik</option>
+                </select>
+            </div>
+            
+            <!-- Xtra Commission Percentage Input -->
+            <div id="xtraCommissionInputDiv">
+                <label for="xtraCommissionRateInput" class="block text-sm font-medium text-gray-700 mb-1">Persentase Komisi Xtra (Pengaturan Penjual, %):</label>
+                <input type="number" id="xtraCommissionRateInput" placeholder="Contoh: 10" class="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" min="0" step="0.1" value="10">
+            </div>
+
+            <!-- Price Input -->
+            <div>
+                <label for="price" class="block text-sm font-medium text-gray-700 mb-1">Harga Produk (Rp):</label>
+                <input type="number" id="price" placeholder="Masukkan harga produk" class="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
+            </div>
+
+            <button onclick="calculateCommission()" class="w-full bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors duration-200">
+                Hitung Komisi
+            </button>
+        </div>
+
+        <!-- Result Display -->
+        <div id="result" class="mt-6 p-4 rounded-lg bg-orange-50 border border-orange-200 text-sm hidden">
+            <h2 class="font-semibold text-orange-800 text-center mb-2">Rincian Komisi</h2>
+            
+            <div class="flex flex-col sm:flex-row justify-between mb-4">
+                <!-- Skema Lama -->
+                <div class="bg-blue-100 p-4 rounded-lg flex-1 mr-0 sm:mr-2 mb-2 sm:mb-0">
+                    <h3 class="font-bold text-blue-800 text-center mb-2">Skema Lama</h3>
+                    <p id="oldShopeeCommission" class="text-gray-700">Komisi Shopee: Rp 0</p>
+                    <p id="oldXtraCommission" class="text-gray-700">Komisi Xtra: Rp 0</p>
+                    <p id="oldTotalCommission" class="text-lg font-bold text-blue-700 mt-2">Total Komisi: Rp 0</p>
+                    <p id="oldCappedMessage" class="text-red-600 italic text-xs mt-1 hidden">Komisi Shopee mencapai batas maksimal.</p>
+                </div>
+
+                <!-- Skema Baru -->
+                <div class="bg-green-100 p-4 rounded-lg flex-1 ml-0 sm:ml-2">
+                    <h3 class="font-bold text-green-800 text-center mb-2">Skema Baru</h3>
+                    <p id="newShopeeCommission" class="text-gray-700">Komisi Shopee: Rp 0</p>
+                    <p id="newXtraCommission" class="text-gray-700">Komisi Xtra: Rp 0</p>
+                    <p id="newTotalCommission" class="text-lg font-bold text-green-700 mt-2">Total Komisi: Rp 0</p>
+                    <p id="newCappedMessage" class="text-red-600 italic text-xs mt-1 hidden">Komisi Shopee mencapai batas maksimal.</p>
+                </div>
+            </div>
+
+            <div id="summary" class="text-center text-sm font-semibold mt-4"></div>
+        </div>
+    </div>
+
+    <script>
+        function calculateCommission() {
+            const program = document.getElementById('program').value;
+            const orderSource = document.getElementById('orderSource').value;
+            const productCategory = document.getElementById('productCategory').value;
+            const price = parseFloat(document.getElementById('price').value);
+
+            if (isNaN(price) || price <= 0) {
+                document.getElementById('result').classList.add('hidden');
+                return;
+            }
+
+            // Dapatkan input persentase Xtra
+            const xtraRateInput = parseFloat(document.getElementById('xtraCommissionRateInput').value) || 0;
+            const xtraRatePromoted = xtraRateInput / 100;
+            const xtraRateUnpromoted = xtraRatePromoted * 0.5;
+
+            // Batasan komisi berdasarkan program
+            const maxShopeeCommission = program === 'shopeePartner' ? 50000 : 10000;
+
+            // Data untuk Skema Lama
+            let oldShopeeRate = 0;
+            let oldXtraRate = 0;
+            if (program === 'shopeePartner') {
+                if (productCategory === 'nonElectronic') {
+                    oldShopeeRate = 0.035;
+                } else { // 'electronic'
+                    oldShopeeRate = 0.005;
+                }
+                oldXtraRate = (orderSource === 'promoted') ? xtraRatePromoted : 0;
+            } else { // 'shopeeAffiliate'
+                if (productCategory === 'nonElectronic') {
+                    oldShopeeRate = 0.015;
+                } else { // 'electronic'
+                    oldShopeeRate = 0.005;
+                }
+                oldXtraRate = (orderSource === 'promoted') ? xtraRatePromoted : 0;
+            }
+
+            // Data untuk Skema Baru
+            let newShopeeRate = 0;
+            let newXtraRate = 0;
+            
+            if (program === 'shopeePartner') {
+                if (orderSource === 'promoted') {
+                    newShopeeRate = 0.10;
+                    newXtraRate = xtraRatePromoted;
+                } else { // 'unpromoted'
+                    if (productCategory === 'nonElectronic') {
+                        newShopeeRate = 0.035;
+                    } else { // 'electronic'
+                        newShopeeRate = 0.005;
+                    }
+                    newXtraRate = xtraRateUnpromoted;
+                }
+            } else { // 'shopeeAffiliate'
+                if (orderSource === 'promoted') {
+                    newShopeeRate = 0.10;
+                    newXtraRate = xtraRatePromoted;
+                } else { // 'unpromoted'
+                    if (productCategory === 'nonElectronic') {
+                        newShopeeRate = 0.015;
+                    } else { // 'electronic'
+                        newShopeeRate = 0.005;
+                    }
+                    newXtraRate = xtraRateUnpromoted;
+                }
+            }
+            
+            // Hitung komisi Shopee dan terapkan batasan
+            const oldUncappedShopeeCommission = price * oldShopeeRate;
+            const newUncappedShopeeCommission = price * newShopeeRate;
+            
+            const oldShopeeCommission = Math.min(oldUncappedShopeeCommission, maxShopeeCommission);
+            const newShopeeCommission = Math.min(newUncappedShopeeCommission, maxShopeeCommission);
+
+            // Hitung komisi Xtra (tidak dibatasi)
+            const oldXtraCommission = price * oldXtraRate;
+            const newXtraCommission = price * newXtraRate;
+
+            // Hitung total komisi
+            const oldTotalCommission = oldShopeeCommission + oldXtraCommission;
+            const newTotalCommission = newShopeeCommission + newXtraCommission;
+
+            // Periksa apakah komisi Shopee mencapai batas maksimal
+            const oldCapped = oldUncappedShopeeCommission > maxShopeeCommission;
+            const newCapped = newUncappedShopeeCommission > maxShopeeCommission;
+
+            // Update UI Skema Lama
+            document.getElementById('oldShopeeCommission').textContent = `Komisi Shopee: Rp ${oldShopeeCommission.toFixed(2)}`;
+            document.getElementById('oldXtraCommission').textContent = `Komisi Xtra: Rp ${oldXtraCommission.toFixed(2)}`;
+            document.getElementById('oldTotalCommission').textContent = `Total Komisi: Rp ${oldTotalCommission.toFixed(2)}`;
+            document.getElementById('oldCappedMessage').classList.toggle('hidden', !oldCapped);
+
+            // Update UI Skema Baru
+            document.getElementById('newShopeeCommission').textContent = `Komisi Shopee: Rp ${newShopeeCommission.toFixed(2)}`;
+            document.getElementById('newXtraCommission').textContent = `Komisi Xtra: Rp ${newXtraCommission.toFixed(2)}`;
+            document.getElementById('newTotalCommission').textContent = `Total Komisi: Rp ${newTotalCommission.toFixed(2)}`;
+            document.getElementById('newCappedMessage').classList.toggle('hidden', !newCapped);
+
+            // Tampilkan ringkasan perbandingan
+            let summaryText = "";
+            if (newTotalCommission > oldTotalCommission) {
+                summaryText = `Skema Baru memberikan komisi lebih besar sebesar Rp ${(newTotalCommission - oldTotalCommission).toFixed(2)}.`;
+            } else if (newTotalCommission < oldTotalCommission) {
+                summaryText = `Skema Lama memberikan komisi lebih besar sebesar Rp ${(oldTotalCommission - newTotalCommission).toFixed(2)}.`;
+            } else {
+                summaryText = "Total komisi Skema Baru dan Skema Lama sama.";
+            }
+            document.getElementById('summary').textContent = summaryText;
+
+            document.getElementById('result').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
