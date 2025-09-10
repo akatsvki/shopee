@@ -117,14 +117,14 @@
             let oldXtraRate = 0;
             if (program === 'shopeePartner') {
                 if (productCategory === 'nonElectronic') {
-                    oldShopeeRate = 0.035;
+                    oldShopeeRate = 0.04; // Diperbaiki dari 3.5%
                 } else { // 'electronic'
                     oldShopeeRate = 0.005;
                 }
                 oldXtraRate = (orderSource === 'promoted') ? xtraRatePromoted : 0;
             } else { // 'shopeeAffiliate'
                 if (productCategory === 'nonElectronic') {
-                    oldShopeeRate = 0.015;
+                    oldShopeeRate = 0.02; // Diperbaiki dari 1.5%
                 } else { // 'electronic'
                     oldShopeeRate = 0.005;
                 }
@@ -136,29 +136,19 @@
             let newXtraRate = 0;
             
             if (program === 'shopeePartner') {
-                if (orderSource === 'promoted') {
-                    newShopeeRate = 0.10;
-                    newXtraRate = xtraRatePromoted;
-                } else { // 'unpromoted'
-                    if (productCategory === 'nonElectronic') {
-                        newShopeeRate = 0.035;
-                    } else { // 'electronic'
-                        newShopeeRate = 0.005;
-                    }
-                    newXtraRate = xtraRateUnpromoted;
+                if (productCategory === 'nonElectronic') {
+                    newShopeeRate = 0.035;
+                } else { // 'electronic'
+                    newShopeeRate = 0.005;
                 }
+                newXtraRate = (orderSource === 'promoted') ? xtraRatePromoted : xtraRateUnpromoted;
             } else { // 'shopeeAffiliate'
-                if (orderSource === 'promoted') {
-                    newShopeeRate = 0.10;
-                    newXtraRate = xtraRatePromoted;
-                } else { // 'unpromoted'
-                    if (productCategory === 'nonElectronic') {
-                        newShopeeRate = 0.015;
-                    } else { // 'electronic'
-                        newShopeeRate = 0.005;
-                    }
-                    newXtraRate = xtraRateUnpromoted;
+                if (productCategory === 'nonElectronic') {
+                    newShopeeRate = 0.015;
+                } else { // 'electronic'
+                    newShopeeRate = 0.005;
                 }
+                newXtraRate = (orderSource === 'promoted') ? xtraRatePromoted : xtraRateUnpromoted;
             }
             
             // Hitung komisi Shopee dan terapkan batasan
